@@ -34,9 +34,9 @@ func init() {
 	app = versioned.NewPackageManager("argo-workflows-aws-plugin")
 	app.Description = "Argo Workflows Executor Plugin for AWS Services, e.g. SageMaker Pipelines, Glue, etc."
 	app.Documentation = "https://github.com/greenpau/argo-workflows-aws-plugin/"
-	app.SetVersion(appVersion, "1.0.3")
+	app.SetVersion(appVersion, "1.0.4")
 	app.SetGitBranch(gitBranch, "main")
-	app.SetGitCommit(gitCommit, "v1.0.1-2-g9a1edb7")
+	app.SetGitCommit(gitCommit, "v1.0.3-1-g69a4c79")
 	app.SetBuildUser(buildUser, "")
 	app.SetBuildDate(buildDate, "")
 }
