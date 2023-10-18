@@ -102,7 +102,7 @@ release:
 	@echo "Patched version"
 	@git add VERSION
 	@versioned -sync main.go
-	@git add cmd/${APP}/main.go
+	@git add main.go
 	@git commit -m "released v`cat VERSION | head -1`"
 	@git tag -a v`cat VERSION | head -1` -m "v`cat VERSION | head -1`"
 	@git push
