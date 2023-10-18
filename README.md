@@ -1,6 +1,6 @@
 # argo-workflows-aws-plugin
 
-<a href="https://github.com/greenpau/argo-workflows-aws-plugin/actions/" target="_blank"><img src="https://github.com/greenpau/argo-workflows-aws-plugin/workflows/build/badge.svg?branch=main"></a>
+<a href="https://github.com/greenpau/argo-workflows-aws-plugin/actions/" target="_blank"><img src="https://github.com/greenpau/argo-workflows-aws-plugin/workflows/build/badge.svg"></a>
 
 Argo Workflows Executor Plugin for AWS Services, e.g. SageMaker Pipelines, Glue, etc.
 
@@ -10,6 +10,7 @@ Argo Workflows Executor Plugin for AWS Services, e.g. SageMaker Pipelines, Glue,
 * [Supported AWS Services](#supported-aws-services)
 * [Getting Started](#getting-started)
   * [Enable Executor Plugins](#enable-executor-plugins)
+* [References](#references)
 
 <!-- end-markdown-toc -->
 
@@ -40,3 +41,7 @@ kubectl patch deployment \
     "value": "true",
 }}]'
 ```
+
+## References
+
+* [Argo Workflows - Plugin Directory](https://argoproj.github.io/argo-workflows/plugin-directory/)
