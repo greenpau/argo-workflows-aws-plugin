@@ -20,7 +20,9 @@ methods and database operations.
 
 | **Service Name** | **Implemented?** |
 | --- | --- |
-| SageMaker Pipelines | :white_check_mark: |
+| Amazon SageMaker Pipelines | :construction: |
+| AWS Glue | :construction: |
+
 
 ## Getting Started
 
