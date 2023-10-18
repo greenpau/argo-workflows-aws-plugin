@@ -1,0 +1,37 @@
+kind: ExecutorPlugin
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: awf-aws-plugin
+  annotations:
+    workflows.argoproj.io/description: |
+      This plugin executes various AWS Services, e.g. SageMaker Pipelines, Glue, etc.
+
+      For SageMaker Pipelines, it accepts the name of a SageMaker Pipeline as an input
+      and triggers the execution of the pipeline. Subsequently, it checks the status
+      of the pipeline execution using the execution id.
+    workflows.argoproj.io/version: '>= v3.4'
+spec:
+  sidecar:
+    container:
+      command:
+        - python
+        - -c
+      image: ghcr.io/greenpau/argo-workflows-aws-plugin:latest
+      name: awf-aws-plugin
+      ports:
+        - containerPort: 7492
+      resources:
+        requests:
+          cpu: 100m
+          memory: 32Mi
+        limits:
+          cpu: 200m
+          memory: 64Mi
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
