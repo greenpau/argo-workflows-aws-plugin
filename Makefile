@@ -101,8 +101,13 @@ release:
 	@versioned -patch
 	@echo "Patched version"
 	@git add VERSION
+	@versioned -sync main.go
+	@git add cmd/${APP}/main.go
 	@git commit -m "released v`cat VERSION | head -1`"
 	@git tag -a v`cat VERSION | head -1` -m "v`cat VERSION | head -1`"
 	@git push
 	@git push --tags
+	@@echo "If necessary, run the following commands:"
+	@echo "  git push --delete origin v$(PLUGIN_VERSION)"
+	@echo "  git tag --delete v$(PLUGIN_VERSION)"
 	@echo "$@: complete"
