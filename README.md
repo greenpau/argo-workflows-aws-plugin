@@ -10,6 +10,7 @@ Argo Workflows Executor Plugin for AWS Services, e.g. SageMaker Pipelines, Glue,
 * [Supported AWS Services](#supported-aws-services)
 * [Getting Started](#getting-started)
   * [Enable Executor Plugins](#enable-executor-plugins)
+  * [Install the Plugin](#install-the-plugin)
 * [References](#references)
 
 <!-- end-markdown-toc -->
@@ -40,6 +41,14 @@ kubectl patch deployment \
     "name": "ARGO_EXECUTOR_PLUGINS",
     "value": "true",
 }}]'
+```
+
+### Install the Plugin
+
+Install `argo-workflows-aws-plugin` by creating following the `ConfigMap` in your cluster:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/greenpau/argo-workflows-aws-plugin/main/assets/plugin.yaml
 ```
 
 ## References

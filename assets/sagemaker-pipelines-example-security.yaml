@@ -1,0 +1,53 @@
+---
+# Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: amz-smp-workflow-role
+rules:
+  - apiGroups:
+      - ""
+    verbs:
+      - get
+      - watch
+      - patch
+    resources:
+      - pods
+  - apiGroups:
+      - ""
+    verbs:
+      - get
+      - watch
+    resources:
+      - pods/log
+  - apiGroups:
+      - ""
+    verbs:
+      - get
+    resources:
+      - secrets
+    resourceNames:
+      # List your secrets here
+      - foo
+      - bar
+
+---
+# ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: amz-smp-workflow-sa
+
+---
+# RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: amz-smp-workflow-permissions
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: amz-smp-workflow-role
+subject:
+  kind: ServiceAccount
+  name: amz-smp-workflow-sa

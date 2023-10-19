@@ -13,11 +13,10 @@ metadata:
 spec:
   sidecar:
     container:
-      command:
-        - python
-        - -c
-      image: ghcr.io/greenpau/argo-workflows-aws-plugin:latest
       name: awf-aws-plugin
+      command: ['--debug']
+      image: ghcr.io/greenpau/argo-workflows-aws-plugin:latest
+      imagePullPolicy: IfNotPresent
       ports:
         - containerPort: 7492
       resources:
