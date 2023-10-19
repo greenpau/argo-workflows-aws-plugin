@@ -51,6 +51,16 @@ Install `argo-workflows-aws-plugin` by creating following the `ConfigMap` in you
 kubectl apply -f https://raw.githubusercontent.com/greenpau/argo-workflows-aws-plugin/main/assets/plugin.yaml
 ```
 
+The output follows:
+
+```
+serviceaccount/awf-aws-plugin-sa created
+clusterrole.rbac.authorization.k8s.io/argo-plugin-addition-role created
+clusterrolebinding.rbac.authorization.k8s.io/awf-aws-plugin-addition-binding created
+clusterrolebinding.rbac.authorization.k8s.io/awf-aws-plugin-binding created
+configmap/awf-aws-plugin created
+```
+
 ## References
 
 * [Argo Workflows - Plugin Directory](https://argoproj.github.io/argo-workflows/plugin-directory/)
