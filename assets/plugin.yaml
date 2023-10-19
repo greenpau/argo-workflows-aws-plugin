@@ -1,8 +1,90 @@
-kind: ExecutorPlugin
-apiVersion: argoproj.io/v1alpha1
+---
+apiVersion: v1
+kind: ServiceAccount
 metadata:
-  name: awf-aws-plugin
-  annotations:
+  name: awf-aws-plugin-sa
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: argo-plugin-addition-role
+rules:
+- apiGroups:
+  - argoproj.io
+  resources:
+  - workflowtasksets
+  - workflowtasksets/status
+  verbs:
+  - get
+  - watch
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: awf-aws-plugin-addition-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: argo-plugin-addition-role
+subjects:
+- kind: ServiceAccount
+  name: awf-aws-plugin-sa
+  namespace: default
+- kind: ServiceAccount
+  name: argo
+  namespace: argo
+- kind: ServiceAccount
+  name: default
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: awf-aws-plugin-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: argo-server-cluster-role
+subjects:
+- kind: ServiceAccount
+  name: awf-aws-plugin-sa
+  namespace: default
+- kind: ServiceAccount
+  name: argo
+  namespace: argo
+- kind: ServiceAccount
+  name: default
+  namespace: default
+---
+apiVersion: v1
+data:
+  sidecar.automountServiceAccountToken: "true"
+  sidecar.container: |
+    image: ghcr.io/greenpau/argo-workflows-aws-plugin:latest
+    command: ['--debug']
+    name: awf-aws-plugin
+    ports:
+    - containerPort: 7492
+    resources:
+      limits:
+        cpu: 200m
+        memory: 64Mi
+      requests:
+        cpu: 100m
+        memory: 32Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      runAsUser: 65534
+      capabilities:
+        drop:
+        - ALL
+kind: ConfigMap
+metadata:
+  labels:
+    workflows.argoproj.io/configmap-type: ExecutorPlugin
     workflows.argoproj.io/description: |
       This plugin executes various AWS Services, e.g. SageMaker Pipelines, Glue, etc.
 
@@ -10,27 +92,5 @@ metadata:
       and triggers the execution of the pipeline. Subsequently, it checks the status
       of the pipeline execution using the execution id.
     workflows.argoproj.io/version: '>= v3.4'
-spec:
-  sidecar:
-    container:
-      name: awf-aws-plugin
-      command: ['--debug']
-      image: ghcr.io/greenpau/argo-workflows-aws-plugin:latest
-      imagePullPolicy: IfNotPresent
-      ports:
-        - containerPort: 7492
-      resources:
-        requests:
-          cpu: 100m
-          memory: 32Mi
-        limits:
-          cpu: 200m
-          memory: 64Mi
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        readOnlyRootFilesystem: true
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop:
-            - ALL
+  name: awf-aws-plugin
+  namespace: argo
