@@ -1,3 +1,4 @@
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
@@ -29,7 +30,7 @@ spec:
           validate:
             config:
               token: amz-smp-token
-.
+
     - name: pipeline-execute
       inputs:
         parameters:
