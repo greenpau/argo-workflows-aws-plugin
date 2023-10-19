@@ -87,10 +87,6 @@ metadata:
     workflows.argoproj.io/configmap-type: ExecutorPlugin
     workflows.argoproj.io/description: |
       This plugin executes various AWS Services, e.g. SageMaker Pipelines, Glue, etc.
-
-      For SageMaker Pipelines, it accepts the name of a SageMaker Pipeline as an input
-      and triggers the execution of the pipeline. Subsequently, it checks the status
-      of the pipeline execution using the execution id.
     workflows.argoproj.io/version: '>= v3.4'
   name: awf-aws-plugin
   namespace: argo
