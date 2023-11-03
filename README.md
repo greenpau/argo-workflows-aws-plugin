@@ -121,6 +121,7 @@ Review logs of the containers (`main`, `awf-aws`) inside the pod:
 ```bash
 kubectl logs -n argo -c main sm-pipelines-tswbm-1340600742-agent
 kubectl logs -n argo -c awf-aws sm-pipelines-tswbm-1340600742-agent
+```
 
 ## Misc
 
