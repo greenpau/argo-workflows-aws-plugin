@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: sm-pipelines
+  namespace: argo
+  annotations:
+    workflows.argoproj.io/description: |
+      Execute Amazon SageMaker Pipelines run.
+    workflows.argoproj.io/maintainer: '@greenpau'
+    workflows.argoproj.io/tags: sagemaker, pipelines
+    workflows.argoproj.io/version: '>= 2.9.0'
+spec:
+  activeDeadlineSeconds: 600
+  entrypoint: main
+  arguments:
+    parameters:
+      - name: aws_account_id
+        value: 100000000002
+      - name: aws_region_name
+        value: us-west-2
+      - name: pipeline_name
+        value: MyPipeline
+  templates:
+    - name: main
+      steps:
+        - - name: validate-pipeline
+            template: validate_pipeline
+        - - name: execute-pipeline
+            template: execute_pipeline
+    - name: validate_pipeline
+      plugin:
+        awf-aws-plugin:
+          action: "validate"
+          account_id: "{{workflow.parameters.aws_account_id}}"
+          region_name: "{{workflow.parameters.aws_region_name}}"
+          pipeline_name: "{{workflow.parameters.pipeline_name}}"
+    - name: execute_pipeline
+      plugin:
+        awf-aws-plugin:
+          action: "execute"
+          account_id: "{{workflow.parameters.aws_account_id}}"
+          region_name: "{{workflow.parameters.aws_region_name}}"
+          pipeline_name: "{{workflow.parameters.pipeline_name}}"

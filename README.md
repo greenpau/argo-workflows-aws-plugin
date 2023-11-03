@@ -43,9 +43,16 @@ kubectl patch deployment \
 }}]'
 ```
 
-### Install the Plugin
+Next, restart:
 
-Install `argo-workflows-aws-plugin` by creating following the `ConfigMap` in your cluster:
+```bash
+kubectl -n argo set env deployment/workflow-controller ARGO_EXECUTOR_PLUGINS=true
+kubectl rollout restart -n argo deployment workflow-controller
+```
+
+### Installation
+
+Install the plugin:
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/greenpau/argo-workflows-aws-plugin/main/assets/plugin.yaml
@@ -54,11 +61,71 @@ kubectl apply -f https://raw.githubusercontent.com/greenpau/argo-workflows-aws-p
 The output follows:
 
 ```
-serviceaccount/awf-aws-plugin-sa created
-clusterrole.rbac.authorization.k8s.io/argo-plugin-addition-role created
-clusterrolebinding.rbac.authorization.k8s.io/awf-aws-plugin-addition-binding created
-clusterrolebinding.rbac.authorization.k8s.io/awf-aws-plugin-binding created
+serviceaccount/awf-aws-plugin-sa unchanged
+clusterrole.rbac.authorization.k8s.io/argo-plugin-addition-role unchanged
+clusterrolebinding.rbac.authorization.k8s.io/awf-aws-plugin-addition-binding unchanged
+clusterrolebinding.rbac.authorization.k8s.io/awf-aws-plugin-binding unchanged
 configmap/awf-aws-plugin created
+```
+
+List Argo Workflows Executor Plugins again:
+
+```
+$ kubectl get cm -l workflows.argoproj.io/configmap-type=ExecutorPlugin -n argo
+
+NAME             DATA   AGE
+awf-aws          2      34s
+```
+
+Get details about the plugins:
+
+```bash
+kubectl describe cm -l workflows.argoproj.io/configmap-type=ExecutorPlugin -n argo
+```
+
+### Add Workflow Template
+
+Create a workflow template:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/greenpau/argo-workflows-aws-plugin/main/assets/sagemaker-pipelines-workflow-template.yaml
+```
+
+### Trigger Workflow
+
+Start new workflow:
+
+```bash
+kubectl create -f https://raw.githubusercontent.com/greenpau/argo-workflows-aws-plugin/main/assets/sagemaker-pipelines-workflow.yaml
+```
+
+The output follows:
+
+```
+workflow.argoproj.io/sm-pipelines-qddxn created
+```
+
+Review the status of the workflow by the its name, e.g. `sm-pipelines-qddxn`:
+
+```bash
+kubectl describe pod -n argo sm-pipelines-qddxn
+```
+
+Review logs of the containers (`main`, `awf-aws`) inside the pod:
+
+```bash
+kubectl logs -n argo -c awf-aws sm-pipelines-qddxn-1340600742-agent
+kubectl logs -n argo -c main sm-pipelines-qddxn-1340600742-agent
+```
+
+### Misc
+
+### Uninstall Plugin
+
+If necessary, run the following commands to uninstall the plugin:
+
+```bash
+kubectl delete -f https://raw.githubusercontent.com/greenpau/argo-workflows-aws-plugin/main/assets/plugin.yaml
 ```
 
 ## References
