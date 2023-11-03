@@ -103,9 +103,10 @@ func (ex *ExecutorPlugin) Execute(c *cobra.Command, args []string) (err error) {
 }
 
 func handleHealthCheck(ex *ExecutorPlugin) func(w http.ResponseWriter, req *http.Request) {
-	ex.Logger.Debug("received healthcheck request")
+	ex.Logger.Debug("registered healthcheck handler")
 
 	return func(w http.ResponseWriter, req *http.Request) {
+		ex.Logger.Debug("received healthcheck request")
 		resp := make(map[string]interface{})
 		resp["status_code"] = int(http.StatusOK)
 		b, err := json.Marshal(resp)
@@ -120,9 +121,10 @@ func handleHealthCheck(ex *ExecutorPlugin) func(w http.ResponseWriter, req *http
 }
 
 func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *http.Request) {
-	ex.Logger.Debug("received template.execute request")
+	ex.Logger.Debug("registered template.execute handler")
 
 	return func(w http.ResponseWriter, req *http.Request) {
+		ex.Logger.Debug("received template.execute request")
 		var reqErr error
 		var execErr error
 		defer func() {
