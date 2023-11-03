@@ -10,7 +10,12 @@ Argo Workflows Executor Plugin for AWS Services, e.g. SageMaker Pipelines, Glue,
 * [Supported AWS Services](#supported-aws-services)
 * [Getting Started](#getting-started)
   * [Enable Executor Plugins](#enable-executor-plugins)
-  * [Install the Plugin](#install-the-plugin)
+  * [Installation](#installation)
+  * [Add Workflow Template](#add-workflow-template)
+  * [Trigger Workflow](#trigger-workflow)
+* [Misc](#misc)
+  * [Developer Notes](#developer-notes)
+  * [Uninstall Plugin](#uninstall-plugin)
 * [References](#references)
 
 <!-- end-markdown-toc -->
@@ -102,23 +107,30 @@ kubectl create -f https://raw.githubusercontent.com/greenpau/argo-workflows-aws-
 The output follows:
 
 ```
-workflow.argoproj.io/sm-pipelines-qddxn created
+workflow.argoproj.io/sm-pipelines-tswbm created
 ```
 
-Review the status of the workflow by the its name, e.g. `sm-pipelines-qddxn`:
+Review the status of the workflow by the its name, e.g. `sm-pipelines-tswbm`:
 
 ```bash
-kubectl describe pod -n argo sm-pipelines-qddxn
+kubectl describe pod -n argo sm-pipelines-tswbm-1340600742-agent
 ```
 
 Review logs of the containers (`main`, `awf-aws`) inside the pod:
 
 ```bash
-kubectl logs -n argo -c awf-aws sm-pipelines-qddxn-1340600742-agent
-kubectl logs -n argo -c main sm-pipelines-qddxn-1340600742-agent
-```
+kubectl logs -n argo -c main sm-pipelines-tswbm-1340600742-agent
+kubectl logs -n argo -c awf-aws sm-pipelines-tswbm-1340600742-agent
 
-### Misc
+## Misc
+
+### Developer Notes
+
+When a user triggers workflow execution, Argo Workflows creates a **pod**
+with two (2) containers:
+
+* `main`: Workflow Executor
+* `awf-aws`: AWS Plugin container
 
 ### Uninstall Plugin
 
