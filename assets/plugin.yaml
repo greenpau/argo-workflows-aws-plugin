@@ -45,7 +45,7 @@ metadata:
   name: awf-aws-executor-plugin-cluster-role-bind
 subjects:
 - kind: ServiceAccount
-  name: awf-aws-plugin-executor-plugin
+  name: awf-aws-executor-plugin
   namespace: argo
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -63,7 +63,7 @@ roleRef:
   name: executor
 subjects:
   - kind: ServiceAccount
-    name: awf-aws-plugin-executor-plugin
+    name: awf-aws-executor-plugin
     namespace: argo
 ---
 apiVersion: v1
@@ -89,7 +89,6 @@ data:
       capabilities:
         drop:
         - ALL
-      fsGroupChangePolicy: OnRootMismatch
 kind: ConfigMap
 metadata:
   labels:

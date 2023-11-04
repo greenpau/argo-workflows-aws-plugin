@@ -12,6 +12,7 @@ metadata:
 spec:
   activeDeadlineSeconds: 600
   entrypoint: main
+  serviceAccountName: awf-aws-executor-plugin
   arguments:
     parameters:
       - name: aws_account_id
