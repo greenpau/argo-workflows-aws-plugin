@@ -269,8 +269,10 @@ func TestExecutorPlugin(t *testing.T) {
 				"content_type": "text/plain; charset=utf-8",
 				"status_code":  200,
 				"node": map[string]interface{}{
-					"message": "success",
-					"phase":   "Succeeded",
+					// "message": "success",
+					// "phase":   "Succeeded",
+					"message": "running",
+					"phase":   "Running",
 				},
 			},
 		},

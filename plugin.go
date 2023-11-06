@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	wfv1 "github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1"
 	wfclientset "github.com/argoproj/argo-workflows/v3/pkg/client/clientset/versioned"
@@ -27,6 +28,7 @@ import (
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
 )
 
@@ -132,22 +134,30 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-
+			var requeue *metav1.Duration
 			var nodeResult *wfv1.NodeResult
 			if execErr == nil {
+				// nodeResult = &wfv1.NodeResult{
+				// 	Phase:   wfv1.NodeSucceeded,
+				// 	Message: "success",
+				// }
 				nodeResult = &wfv1.NodeResult{
-					Phase:   wfv1.NodeSucceeded,
-					Message: "success",
+					Phase:   wfv1.NodeRunning,
+					Message: "running",
 				}
 			} else {
 				nodeResult = &wfv1.NodeResult{
 					Phase:   wfv1.NodeError,
 					Message: execErr.Error(),
 				}
+				requeue = &metav1.Duration{
+					Duration: 60 * time.Second,
+				}
 			}
 
 			jsonResp, jsonErr := json.Marshal(executor.ExecuteTemplateReply{
-				Node: nodeResult,
+				Node:    nodeResult,
+				Requeue: requeue,
 			})
 			if jsonErr != nil {
 				ex.Logger.Warn("failed to build JSON response", zap.Error(jsonErr))
