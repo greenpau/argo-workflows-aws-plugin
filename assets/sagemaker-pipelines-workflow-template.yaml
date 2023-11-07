@@ -32,6 +32,7 @@ spec:
       plugin:
         awf-aws-plugin:
           action: "validate"
+          service: "sagemaker_pipelines"
           account_id: "{{workflow.parameters.aws_account_id}}"
           region_name: "{{workflow.parameters.aws_region_name}}"
           pipeline_name: "{{workflow.parameters.pipeline_name}}"
@@ -39,6 +40,7 @@ spec:
       plugin:
         awf-aws-plugin:
           action: "execute"
+          service: "sagemaker_pipelines"
           account_id: "{{workflow.parameters.aws_account_id}}"
           region_name: "{{workflow.parameters.aws_region_name}}"
           pipeline_name: "{{workflow.parameters.pipeline_name}}"

@@ -50,6 +50,7 @@ type ExecutorPlugin struct {
 	Mock         bool
 	ClientConfig *rest.Config
 	Client       *wfclientset.Clientset
+	DebugEnabled bool
 }
 
 // Configure parses cli arguments and configures the plugin.
@@ -60,7 +61,7 @@ func (ex *ExecutorPlugin) Configure(flags *pflag.FlagSet) error {
 			if err != nil {
 				panic(err)
 			}
-			if debugFlag {
+			if debugFlag || ex.DebugEnabled {
 				return NewLogger(zapcore.DebugLevel)
 			}
 			return NewLogger(zapcore.InfoLevel)
@@ -68,7 +69,7 @@ func (ex *ExecutorPlugin) Configure(flags *pflag.FlagSet) error {
 		ex.Logger = newLogger()
 	}
 
-	ex.Logger.Info("executing plugin",
+	ex.Logger.Info("configuring plugin",
 		zap.String("plugin_name", app.Name),
 		zap.Int("port", ex.Port),
 		zap.String("log_level", ex.Logger.Level().CapitalString()),

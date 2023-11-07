@@ -144,6 +144,7 @@ func newTestHTTPRequest(t *testing.T, testName string, url string, req *testHTTP
 
 func TestExecutorPlugin(t *testing.T) {
 	log := NewLogger(zapcore.DebugLevel)
+	defer log.Sync()
 
 	// Initialize mock Kubernetes HTTP server.
 	kubeSrv := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -231,6 +232,7 @@ func TestExecutorPlugin(t *testing.T) {
 		Mock:         true,
 		ClientConfig: config,
 		Client:       client,
+		DebugEnabled: true,
 	}
 
 	cmd := BuildCommand(ex)
@@ -262,7 +264,27 @@ func TestExecutorPlugin(t *testing.T) {
 				},
 				path: "/api/v1/template.execute",
 				data: map[string]interface{}{
-					"foo": "bar",
+					"workflow": map[string]interface{}{
+						"metadata": map[string]interface{}{
+							"name":      "sm-pipelines-r58tg",
+							"namespace": "argo",
+							"uid":       "27c01e7c-9d93-450f-a001-c64d649aac99",
+						},
+					},
+					"template": map[string]interface{}{
+						"name":     "validate_pipeline",
+						"inputs":   map[string]interface{}{},
+						"outputs":  map[string]interface{}{},
+						"metadata": map[string]interface{}{},
+						"plugin": map[string]interface{}{
+							"awf-aws-plugin": map[string]interface{}{
+								"account_id":    "100000000002",
+								"action":        "validate",
+								"pipeline_name": "MyPipeline",
+								"region_name":   "us-west-2",
+							},
+						},
+					},
 				},
 			},
 			want: map[string]interface{}{
@@ -291,6 +313,8 @@ func TestExecutorPlugin(t *testing.T) {
 
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Logf("test name %s: started", tc.name)
+			// t.Errorf("FFF")
 			got := make(map[string]interface{})
 			// kubeClient := newTestKubeHTTPClient(t, kubeSrv)
 			// req := newTestHTTPRequest(t, tc.name, kubeSrv.URL, tc.req)
@@ -328,6 +352,8 @@ func TestExecutorPlugin(t *testing.T) {
 			if diff := cmp.Diff(tc.want, got); diff != "" {
 				t.Fatalf("test name: %s, unexpected error (-want +got):\n%s", tc.name, diff)
 			}
+
+			t.Logf("test name %s: finished", tc.name)
 		})
 	}
 }

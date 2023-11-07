@@ -57,7 +57,7 @@ covdir:
 .PHONY: runtest
 runtest:
 	@echo "$@: started"
-	@go test $(VERBOSE) -coverprofile=.coverage/coverage.out ./*.go
+	@go test -v -coverprofile=.coverage/coverage.out ./*.go
 	@echo "$@: complete"
 
 .PHONY: test
@@ -67,7 +67,7 @@ test: covdir linter runtest coverage
 .PHONY: ctest
 ctest: covdir linter
 	@echo "$@: started"
-	@time richgo test $(VERBOSE) $(TEST) -coverprofile=.coverage/coverage.out ./*.go
+	@time richgo test -v $(TEST) -coverprofile=.coverage/coverage.out ./*.go
 	@echo "$@: complete"
 
 .PHONY: coverage
@@ -82,7 +82,7 @@ coverage: covdir
 .PHONY: qtest
 qtest:
 	@echo "$@: started"
-	@time richgo test -run -coverprofile=.coverage/coverage.out -run TestExecutorPlugin *.go
+	@time richgo test -v -run -coverprofile=.coverage/coverage.out -run TestExecutorPlugin *.go
 	@echo "$@: complete"
 
 .PHONY: clean
