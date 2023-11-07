@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/argoproj/argo-workflows/v3 v3.5.0
+	github.com/aws/aws-sdk-go v1.45.1
 	github.com/google/go-cmp v0.5.9
 	github.com/greenpau/versioned v1.0.28
 	github.com/spf13/cobra v1.7.0
@@ -27,6 +28,7 @@ require (
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect

@@ -13,8 +13,6 @@ Argo Workflows Executor Plugin for AWS Services, e.g. SageMaker Pipelines, Glue,
   * [Installation](#installation)
   * [Add Workflow Template](#add-workflow-template)
   * [Trigger Workflow](#trigger-workflow)
-* [Misc](#misc)
-  * [Developer Notes](#developer-notes)
   * [Uninstall Plugin](#uninstall-plugin)
 * [References](#references)
 
@@ -57,10 +55,19 @@ kubectl rollout restart -n argo deployment workflow-controller
 
 ### Installation
 
-Install the plugin:
+Download the plugin manifest:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/greenpau/argo-workflows-aws-plugin/main/assets/plugin.yaml
+wget https://raw.githubusercontent.com/greenpau/argo-workflows-aws-plugin/main/assets/plugin.yaml
+```
+
+Edit `metadata.annotations.eks.amazonaws.com/role-arn` in the `ServiceAccount`. (see `DEVELOPMENT.md` for
+more information about associated IAM role and policy)
+
+Next, install the plugin:
+
+```bash
+kubectl apply -f plugin.yaml
 ```
 
 The output follows:
@@ -122,16 +129,6 @@ Review logs of the containers (`main`, `awf-aws`) inside the pod:
 kubectl logs -n argo -c main sm-pipelines-tswbm-1340600742-agent
 kubectl logs -n argo -c awf-aws sm-pipelines-tswbm-1340600742-agent
 ```
-
-## Misc
-
-### Developer Notes
-
-When a user triggers workflow execution, Argo Workflows creates a **pod**
-with two (2) containers:
-
-* `main`: Workflow Executor
-* `awf-aws`: AWS Plugin container
 
 ### Uninstall Plugin
 

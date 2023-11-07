@@ -256,7 +256,7 @@ func TestExecutorPlugin(t *testing.T) {
 		want      map[string]interface{}
 	}{
 		{
-			name: "test POST template.execute",
+			name: "test validate pipeline",
 			req: &testHTTPRequest{
 				method: "POST",
 				headers: map[string]string{
@@ -280,8 +280,11 @@ func TestExecutorPlugin(t *testing.T) {
 							"awf-aws-plugin": map[string]interface{}{
 								"account_id":    "100000000002",
 								"action":        "validate",
+								"service":       "amazon_sagemaker_pipelines",
 								"pipeline_name": "MyPipeline",
 								"region_name":   "us-west-2",
+								"mock":          true,
+								"mock_state":    "success",
 							},
 						},
 					},
@@ -291,11 +294,54 @@ func TestExecutorPlugin(t *testing.T) {
 				"content_type": "text/plain; charset=utf-8",
 				"status_code":  200,
 				"node": map[string]interface{}{
-					// "message": "success",
-					// "phase":   "Succeeded",
+					"message": "success",
+					"phase":   "Succeeded",
+				},
+			},
+		},
+		{
+			name: "test execute pipeline",
+			req: &testHTTPRequest{
+				method: "POST",
+				headers: map[string]string{
+					"Content-Type": "application/json",
+				},
+				path: "/api/v1/template.execute",
+				data: map[string]interface{}{
+					"workflow": map[string]interface{}{
+						"metadata": map[string]interface{}{
+							"name":      "sm-pipelines-b863f",
+							"namespace": "argo",
+							"uid":       "1018894b-ede2-4b38-b258-e707e133b839",
+						},
+					},
+					"template": map[string]interface{}{
+						"name":     "execute_pipeline",
+						"inputs":   map[string]interface{}{},
+						"outputs":  map[string]interface{}{},
+						"metadata": map[string]interface{}{},
+						"plugin": map[string]interface{}{
+							"awf-aws-plugin": map[string]interface{}{
+								"account_id":    "100000000002",
+								"action":        "execute",
+								"service":       "amazon_sagemaker_pipelines",
+								"pipeline_name": "MyPipeline",
+								"region_name":   "us-west-2",
+								"mock":          true,
+								"mock_state":    "running",
+							},
+						},
+					},
+				},
+			},
+			want: map[string]interface{}{
+				"content_type": "text/plain; charset=utf-8",
+				"status_code":  200,
+				"node": map[string]interface{}{
 					"message": "running",
 					"phase":   "Running",
 				},
+				"requeue": "1m0s",
 			},
 		},
 		{
@@ -314,7 +360,6 @@ func TestExecutorPlugin(t *testing.T) {
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Logf("test name %s: started", tc.name)
-			// t.Errorf("FFF")
 			got := make(map[string]interface{})
 			// kubeClient := newTestKubeHTTPClient(t, kubeSrv)
 			// req := newTestHTTPRequest(t, tc.name, kubeSrv.URL, tc.req)

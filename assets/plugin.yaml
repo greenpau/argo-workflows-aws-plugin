@@ -4,6 +4,8 @@ kind: ServiceAccount
 metadata:
   name: awf-aws-executor-plugin
   namespace: argo
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::100000000002:role/awf-aws-executor-plugin
 ---
 apiVersion: v1
 kind: Secret
