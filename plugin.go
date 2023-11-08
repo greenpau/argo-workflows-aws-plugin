@@ -202,17 +202,20 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 
 		if req.Method != http.MethodPost {
 			resp.RequestError = ErrMalformedRequest.WithArgs("method is not POST")
+			resp.Status = 3
 			return
 		}
 
 		if header := req.Header.Get("Content-Type"); header != "application/json" {
 			resp.RequestError = ErrUnsupportedContentType
+			resp.Status = 3
 			return
 		}
 
 		body, err := io.ReadAll(req.Body)
 		if err != nil {
 			resp.RequestError = ErrRequestReaderError.WithArgs(err)
+			resp.Status = 3
 			return
 		}
 
@@ -223,6 +226,7 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 		args := executor.ExecuteTemplateArgs{}
 		if err = json.Unmarshal(body, &args); err != nil || args.Workflow == nil || args.Template == nil {
 			resp.RequestError = ErrRequestParserError.WithArgs(err)
+			resp.Status = 3
 			return
 		}
 
@@ -240,6 +244,7 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 		if err != nil {
 			ex.Logger.Error("encountered error during marshaling of plugin request body", zap.Error(err))
 			resp.RequestError = ErrRequestParserError.WithArgs(err)
+			resp.Status = 3
 			return
 		}
 
@@ -247,6 +252,7 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 		if err := json.Unmarshal(pluginInputJSON, &pluginInputBody); err != nil {
 			ex.Logger.Error("encountered error during unmarshaling of plugin request", zap.Error(err))
 			resp.RequestError = ErrRequestParserError.WithArgs(err)
+			resp.Status = 3
 			return
 		}
 
@@ -254,12 +260,14 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 		if !pluginInputFound {
 			ex.Logger.Error("plugin input not found")
 			resp.RequestError = ErrRequestInputMalformedError.WithArgs("plugin input not found")
+			resp.Status = 3
 			return
 		}
 
 		if err := pluginInput.Validate(); err != nil {
 			ex.Logger.Error("encountered error during validation of plugin request", zap.Error(err))
 			resp.RequestError = ErrRequestInputMalformedError.WithArgs(err)
+			resp.Status = 3
 			return
 		}
 
