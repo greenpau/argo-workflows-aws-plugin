@@ -52,7 +52,7 @@ func (ex *ExecutorPlugin) CheckIfSageMakerPipelineExists(req *PluginRequest) *Pl
 	b, err := json.Marshal(output)
 	if err != nil {
 		return &PluginResponse{
-			ExecutionError: fmt.Errorf("failed to pack amazon sagemaker pipeline response: %s", err),
+			ExecutionError: fmt.Errorf("failed to pack amazon sagemaker pipeline check response: %s", err),
 		}
 	}
 	return &PluginResponse{
@@ -61,7 +61,7 @@ func (ex *ExecutorPlugin) CheckIfSageMakerPipelineExists(req *PluginRequest) *Pl
 }
 
 // StartSageMakerPipelineExecution starts SageMaker Pipelines instance.
-func (ex *ExecutorPlugin) StartSageMakerPipelineExecution(req *PluginRequest) *PluginResponse {
+func (ex *ExecutorPlugin) StartSageMakerPipelineExecution(req *PluginRequest, workflowID string) *PluginResponse {
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String(req.RegionName),
 	})
@@ -87,8 +87,19 @@ func (ex *ExecutorPlugin) StartSageMakerPipelineExecution(req *PluginRequest) *P
 	b, err := json.Marshal(output)
 	if err != nil {
 		return &PluginResponse{
-			ExecutionError: fmt.Errorf("failed to pack amazon sagemaker pipeline response: %s", err),
+			ExecutionError: fmt.Errorf("failed to pack amazon sagemaker pipeline start response: %s", err),
 		}
+	}
+
+	executionArn := *output.PipelineExecutionArn
+	if executionArn == "" {
+		return &PluginResponse{
+			ExecutionError: fmt.Errorf("amazon sagemaker pipeline start response has no execution ARN"),
+		}
+	}
+
+	ex.Workflows[workflowID] = &PluginWorkflow{
+		ID: executionArn,
 	}
 
 	return &PluginResponse{
@@ -127,7 +138,7 @@ func (ex *ExecutorPlugin) CheckSageMakerPipelineExecution(req *PluginRequest, ex
 	b, err := json.Marshal(output)
 	if err != nil {
 		return &PluginResponse{
-			ExecutionError: fmt.Errorf("failed to pack amazon sagemaker pipeline response: %s", err),
+			ExecutionError: fmt.Errorf("failed to pack amazon sagemaker pipeline execution response: %s", err),
 		}
 	}
 

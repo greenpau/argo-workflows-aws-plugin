@@ -281,7 +281,7 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 					resp = ex.CheckSageMakerPipelineExecution(pluginInput, pluginWorkflow.ID)
 					return
 				}
-				resp = ex.StartSageMakerPipelineExecution(pluginInput)
+				resp = ex.StartSageMakerPipelineExecution(pluginInput, wfID)
 				return
 			}
 		}
