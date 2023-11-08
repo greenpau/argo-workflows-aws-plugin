@@ -108,6 +108,7 @@ func (ex *ExecutorPlugin) StartSageMakerPipelineExecution(req *PluginRequest, wo
 		RequeueDuration: &metav1.Duration{
 			Duration: 60 * time.Second,
 		},
+		Status: 2,
 	}
 }
 

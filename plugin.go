@@ -143,41 +143,53 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			var requeue *metav1.Duration
-			var nodeResult *wfv1.NodeResult
+
 			var phase wfv1.NodePhase
-			if resp.ExecutionError == nil {
-				if resp.ShouldRequeue {
-					if resp.Message == "" {
-						resp.Message = "running"
-					}
-					phase = wfv1.NodeRunning
-					if requeue == nil {
-						requeue = &metav1.Duration{
-							Duration: 60 * time.Second,
-						}
-					}
-				} else {
-					if resp.Message == "" {
-						resp.Message = "success"
-					}
-					phase = wfv1.NodeSucceeded
-				}
-			} else {
+
+			switch resp.Status {
+			case 1:
+				phase = wfv1.NodeSucceeded
 				if resp.Message == "" {
-					resp.Message = resp.ExecutionError.Error()
+					resp.Message = "success"
 				}
+			case 2:
+				phase = wfv1.NodeRunning
+				if resp.Message == "" {
+					resp.Message = "running"
+				}
+				if resp.RequeueDuration == nil {
+					resp.RequeueDuration =  &metav1.Duration{
+						Duration: 60 * time.Second,
+					}
+				}
+			case 3:
 				phase = wfv1.NodeError
+				if resp.Message == "" {
+					if resp.ExecutionError != nil {
+						resp.Message = resp.ExecutionError.Error()
+					} else {
+						resp.Message = "error"
+					}
+				}
+			default:
+				phase = wfv1.NodeError
+				if resp.Message == "" {
+					if resp.ExecutionError != nil {
+						resp.Message = resp.ExecutionError.Error()
+					} else {
+						resp.Message = "unknown error"
+					}
+				}
 			}
 
-			nodeResult = &wfv1.NodeResult{
+			nodeResult := &wfv1.NodeResult{
 				Phase:   phase,
 				Message: resp.Message,
 			}
 
 			jsonResp, jsonErr := json.Marshal(executor.ExecuteTemplateReply{
 				Node:    nodeResult,
-				Requeue: requeue,
+				Requeue: resp.RequeueDuration,
 			})
 			if jsonErr != nil {
 				ex.Logger.Warn("failed to build JSON response", zap.Error(jsonErr))
@@ -260,11 +272,14 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 		if pluginInput.Mock {
 			switch pluginInput.MockState {
 			case "success":
+				resp.Status = 1
 				return
 			case "running":
 				resp.ShouldRequeue = true
+				resp.Status = 2
 				return
 			case "error":
+				resp.Status = 3
 				resp.ExecutionError = ErrExecutionError.WithArgs("expected mock error")
 				return
 			}
