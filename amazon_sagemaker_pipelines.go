@@ -22,6 +22,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sagemaker"
+	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -106,6 +107,11 @@ func (ex *ExecutorPlugin) StartSageMakerPipelineExecution(req *PluginRequest, wo
 		}
 	}
 
+	ex.Logger.Info("started sagemaker pipeline instance",
+		zap.String("plugin_name", app.Name),
+		zap.String("execution_arn", executionArn),
+	)
+
 	ex.Workflows[workflowID] = &PluginWorkflow{
 		ID: executionArn,
 	}
@@ -155,7 +161,7 @@ func (ex *ExecutorPlugin) CheckSageMakerPipelineExecution(req *PluginRequest, ex
 	}
 
 	switch output.PipelineExecutionStatus {
-	case aws.String("InProgress"), aws.String("Stopping"):
+	case aws.String("Stopping"), aws.String("Executing"):
 		return &PluginResponse{
 			Message:       string(b),
 			ShouldRequeue: true,
