@@ -25,8 +25,9 @@ methods and database operations.
 
 | **Service Name** | **Implemented?** |
 | --- | --- |
-| Amazon SageMaker Pipelines | :construction: |
+| Amazon SageMaker Pipelines | :heavy_check_mark: |
 | AWS Glue | :construction: |
+| AWS Step Functions | :construction: |
 
 
 ## Getting Started
