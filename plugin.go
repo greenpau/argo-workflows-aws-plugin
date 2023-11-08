@@ -153,6 +153,15 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 					resp.Message = "success"
 				}
 			case 2:
+				phase = wfv1.NodeError
+				if resp.Message == "" {
+					if resp.ExecutionError != nil {
+						resp.Message = resp.ExecutionError.Error()
+					} else {
+						resp.Message = "error"
+					}
+				}
+			case 3:
 				phase = wfv1.NodeRunning
 				if resp.Message == "" {
 					resp.Message = "running"
@@ -160,15 +169,6 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 				if resp.RequeueDuration == nil {
 					resp.RequeueDuration = &metav1.Duration{
 						Duration: 60 * time.Second,
-					}
-				}
-			case 3:
-				phase = wfv1.NodeError
-				if resp.Message == "" {
-					if resp.ExecutionError != nil {
-						resp.Message = resp.ExecutionError.Error()
-					} else {
-						resp.Message = "error"
 					}
 				}
 			default:
@@ -202,20 +202,20 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 
 		if req.Method != http.MethodPost {
 			resp.RequestError = ErrMalformedRequest.WithArgs("method is not POST")
-			resp.Status = 3
+			resp.Status = 2
 			return
 		}
 
 		if header := req.Header.Get("Content-Type"); header != "application/json" {
 			resp.RequestError = ErrUnsupportedContentType
-			resp.Status = 3
+			resp.Status = 2
 			return
 		}
 
 		body, err := io.ReadAll(req.Body)
 		if err != nil {
 			resp.RequestError = ErrRequestReaderError.WithArgs(err)
-			resp.Status = 3
+			resp.Status = 2
 			return
 		}
 
@@ -226,7 +226,7 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 		args := executor.ExecuteTemplateArgs{}
 		if err = json.Unmarshal(body, &args); err != nil || args.Workflow == nil || args.Template == nil {
 			resp.RequestError = ErrRequestParserError.WithArgs(err)
-			resp.Status = 3
+			resp.Status = 2
 			return
 		}
 
@@ -244,7 +244,7 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 		if err != nil {
 			ex.Logger.Error("encountered error during marshaling of plugin request body", zap.Error(err))
 			resp.RequestError = ErrRequestParserError.WithArgs(err)
-			resp.Status = 3
+			resp.Status = 2
 			return
 		}
 
@@ -252,7 +252,7 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 		if err := json.Unmarshal(pluginInputJSON, &pluginInputBody); err != nil {
 			ex.Logger.Error("encountered error during unmarshaling of plugin request", zap.Error(err))
 			resp.RequestError = ErrRequestParserError.WithArgs(err)
-			resp.Status = 3
+			resp.Status = 2
 			return
 		}
 
@@ -260,14 +260,14 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 		if !pluginInputFound {
 			ex.Logger.Error("plugin input not found")
 			resp.RequestError = ErrRequestInputMalformedError.WithArgs("plugin input not found")
-			resp.Status = 3
+			resp.Status = 2
 			return
 		}
 
 		if err := pluginInput.Validate(); err != nil {
 			ex.Logger.Error("encountered error during validation of plugin request", zap.Error(err))
 			resp.RequestError = ErrRequestInputMalformedError.WithArgs(err)
-			resp.Status = 3
+			resp.Status = 2
 			return
 		}
 
@@ -282,13 +282,13 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 			case "success":
 				resp.Status = 1
 				return
+			case "error":
+				resp.Status = 2
+				resp.ExecutionError = ErrExecutionError.WithArgs("expected mock error")
+				return
 			case "running":
 				resp.ShouldRequeue = true
-				resp.Status = 2
-				return
-			case "error":
 				resp.Status = 3
-				resp.ExecutionError = ErrExecutionError.WithArgs("expected mock error")
 				return
 			}
 		}

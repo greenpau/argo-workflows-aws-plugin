@@ -26,10 +26,10 @@ const (
 	UNKNOWN PluginWorkflowStatus = iota
 	// SUCCESS identifies successful status (1).
 	SUCCESS
-	// RUNNING identifies the workflow is still running (2).
-	RUNNING
 	// ERROR identifies failed workflow (3).
 	ERROR
+	// RUNNING identifies the workflow is still running (2).
+	RUNNING
 )
 
 // String returns the description for IdentityProviderType enum.
@@ -37,10 +37,10 @@ func (m PluginWorkflowStatus) String() string {
 	switch m {
 	case SUCCESS:
 		return "success"
-	case RUNNING:
-		return "running"
 	case ERROR:
 		return "error"
+	case RUNNING:
+		return "running"
 	}
 	return fmt.Sprintf("PluginWorkflowStatus(%d)", int(m))
 }
