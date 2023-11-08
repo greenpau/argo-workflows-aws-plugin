@@ -55,8 +55,10 @@ func (ex *ExecutorPlugin) CheckIfSageMakerPipelineExists(req *PluginRequest) *Pl
 			ExecutionError: fmt.Errorf("failed to pack amazon sagemaker pipeline check response: %s", err),
 		}
 	}
+
 	return &PluginResponse{
 		Message: string(b),
+		Status:  1,
 	}
 }
 

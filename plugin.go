@@ -158,7 +158,7 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 					resp.Message = "running"
 				}
 				if resp.RequeueDuration == nil {
-					resp.RequeueDuration =  &metav1.Duration{
+					resp.RequeueDuration = &metav1.Duration{
 						Duration: 60 * time.Second,
 					}
 				}
