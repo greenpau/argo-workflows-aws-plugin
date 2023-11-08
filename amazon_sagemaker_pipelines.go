@@ -33,6 +33,7 @@ func (ex *ExecutorPlugin) CheckIfSageMakerPipelineExists(req *PluginRequest) *Pl
 	if err != nil {
 		return &PluginResponse{
 			ExecutionError: fmt.Errorf("failed to create aws session: %s", err),
+			Status:  3,
 		}
 	}
 
@@ -46,6 +47,7 @@ func (ex *ExecutorPlugin) CheckIfSageMakerPipelineExists(req *PluginRequest) *Pl
 	if err != nil {
 		return &PluginResponse{
 			ExecutionError: fmt.Errorf("failed to describe amazon sagemaker pipeline: %s", err),
+			Status:  3,
 		}
 	}
 
@@ -53,6 +55,7 @@ func (ex *ExecutorPlugin) CheckIfSageMakerPipelineExists(req *PluginRequest) *Pl
 	if err != nil {
 		return &PluginResponse{
 			ExecutionError: fmt.Errorf("failed to pack amazon sagemaker pipeline check response: %s", err),
+			Status:  3,
 		}
 	}
 
@@ -83,6 +86,7 @@ func (ex *ExecutorPlugin) StartSageMakerPipelineExecution(req *PluginRequest, wo
 	if err != nil {
 		return &PluginResponse{
 			ExecutionError: fmt.Errorf("failed to start amazon sagemaker pipeline: %s", err),
+			Status:  3,
 		}
 	}
 
@@ -90,6 +94,7 @@ func (ex *ExecutorPlugin) StartSageMakerPipelineExecution(req *PluginRequest, wo
 	if err != nil {
 		return &PluginResponse{
 			ExecutionError: fmt.Errorf("failed to pack amazon sagemaker pipeline start response: %s", err),
+			Status:  3,
 		}
 	}
 
@@ -97,6 +102,7 @@ func (ex *ExecutorPlugin) StartSageMakerPipelineExecution(req *PluginRequest, wo
 	if executionArn == "" {
 		return &PluginResponse{
 			ExecutionError: fmt.Errorf("amazon sagemaker pipeline start response has no execution ARN"),
+			Status:  3,
 		}
 	}
 
@@ -122,6 +128,7 @@ func (ex *ExecutorPlugin) CheckSageMakerPipelineExecution(req *PluginRequest, ex
 	if err != nil {
 		return &PluginResponse{
 			ExecutionError: fmt.Errorf("failed to create aws session: %s", err),
+			Status:  3,
 		}
 	}
 
@@ -135,6 +142,7 @@ func (ex *ExecutorPlugin) CheckSageMakerPipelineExecution(req *PluginRequest, ex
 	if err != nil {
 		return &PluginResponse{
 			ExecutionError: fmt.Errorf("failed to describe amazon sagemaker pipeline execution: %s", err),
+			Status:  3,
 		}
 	}
 
@@ -142,6 +150,7 @@ func (ex *ExecutorPlugin) CheckSageMakerPipelineExecution(req *PluginRequest, ex
 	if err != nil {
 		return &PluginResponse{
 			ExecutionError: fmt.Errorf("failed to pack amazon sagemaker pipeline execution response: %s", err),
+			Status:  3,
 		}
 	}
 
