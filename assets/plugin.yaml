@@ -73,6 +73,7 @@ data:
   sidecar.automountServiceAccountToken: "true"
   sidecar.container: |
     image: ghcr.io/greenpau/argo-workflows-aws-plugin:latest
+    imagePullPolicy: Always
     command: ['argo-workflows-aws-plugin', '--debug']
     name: awf-aws
     ports:

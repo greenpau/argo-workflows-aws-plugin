@@ -21,7 +21,8 @@ The following CDK code add a role, which is later referenced in `plugin.yaml` ma
     const k8sConditions = new cdk.CfnJson(this, "KubeOIDCCondition", {
       value: {
         [audClaim]: "sts.amazonaws.com",
-        [subClaim]: "system:serviceaccount:kube-system:aws-node",
+        // [subClaim]: "system:serviceaccount:kube-system:aws-node",
+        [subClaim]: "system:serviceaccount:argo:awf-aws-executor-plugin",
       },
     });
 
