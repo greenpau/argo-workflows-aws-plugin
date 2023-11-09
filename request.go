@@ -85,7 +85,7 @@ func (req *PluginRequest) Validate() error {
 		if req.StepFunctionName == "" {
 			return fmt.Errorf("step_function_name is empty")
 		}
-		req.ResourceArn = fmt.Sprintf("arn:aws:states:%s:%s:stateMachine/%s", req.RegionName, req.AccountID, req.StepFunctionName)
+		req.ResourceArn = fmt.Sprintf("arn:aws:states:%s:%s:stateMachine:%s", req.RegionName, req.AccountID, req.StepFunctionName)
 	}
 
 	if req.Mock {

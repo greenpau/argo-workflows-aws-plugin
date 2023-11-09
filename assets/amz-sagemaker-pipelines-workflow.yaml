@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
-  generateName : sm-pipelines-
+  generateName : amz-sagemaker-pipeline-
   namespace: argo
 spec:
   entrypoint: main
@@ -15,4 +15,4 @@ spec:
       - name: pipeline_name
         value: MyPipeline
   workflowTemplateRef:
-    name: sm-pipelines
+    name: amz-sagemaker-pipeline

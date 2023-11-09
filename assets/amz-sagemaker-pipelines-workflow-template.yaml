@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
-  name: sm-pipelines
+  name: amz-sagemaker-pipeline
   namespace: argo
   annotations:
     workflows.argoproj.io/description: |

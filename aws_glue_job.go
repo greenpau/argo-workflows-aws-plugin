@@ -80,7 +80,7 @@ func (ex *ExecutorPlugin) StartGlueJobExecution(req *PluginRequest, workflowID s
 	g := glue.New(sess)
 
 	params := &glue.StartJobRunInput{
-		JobName: &req.ResourceArn,
+		JobName: &req.JobName,
 	}
 
 	output, err := g.StartJobRun(params)
