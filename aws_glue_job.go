@@ -41,7 +41,7 @@ func (ex *ExecutorPlugin) CheckIfGlueJobExists(req *PluginRequest) *PluginRespon
 	g := glue.New(sess)
 
 	params := &glue.GetJobInput{
-		JobName: &req.ResourceArn,
+		JobName: &req.JobName,
 	}
 
 	output, err := g.GetJob(params)
