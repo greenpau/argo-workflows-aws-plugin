@@ -293,7 +293,8 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 			}
 		}
 
-		if pluginInput.ServiceName == "amazon_sagemaker_pipelines" {
+		switch pluginInput.ServiceName {
+		case "amazon_sagemaker_pipelines":
 			switch pluginInput.Action {
 			case "validate":
 				resp = ex.CheckIfSageMakerPipelineExists(pluginInput)
@@ -307,6 +308,39 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 				resp = ex.StartSageMakerPipelineExecution(pluginInput, wfID)
 				return
 			}
+		case "aws_glue":
+			switch pluginInput.Action {
+			case "validate":
+				resp = ex.CheckIfGlueJobExists(pluginInput)
+				return
+			case "execute":
+				pluginWorkflow, exists := ex.Workflows[wfID]
+				if exists {
+					resp = ex.CheckGlueJobExecution(pluginInput, pluginWorkflow.ID)
+					return
+				}
+				resp = ex.StartGlueJobExecution(pluginInput, wfID)
+				return
+			}
+		case "aws_step_functions":
+			switch pluginInput.Action {
+			case "validate":
+				resp = ex.CheckIfStepFunctionExists(pluginInput)
+				return
+			case "execute":
+				pluginWorkflow, exists := ex.Workflows[wfID]
+				if exists {
+					resp = ex.CheckStepFunctionExecution(pluginInput, pluginWorkflow.ID)
+					return
+				}
+				resp = ex.StartStepFunctionExecution(pluginInput, wfID)
+				return
+			}
+		default:
+			ex.Logger.Error("encountered error during validation of plugin request", zap.String("error", "unsupported service name"))
+			resp.RequestError = ErrRequestInputMalformedError.WithArgs("unsupported service name")
+			resp.Status = 2
+			return
 		}
 	}
 }

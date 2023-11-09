@@ -1,0 +1,18 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName : aws-glue-job-
+  namespace: argo
+spec:
+  entrypoint: main
+  arguments:
+    parameters:
+      - name: aws_account_id
+        value: 100000000002
+      - name: aws_region_name
+        value: us-west-2
+      - name: job_name
+        value: MyGlueJob
+  workflowTemplateRef:
+    name: aws-glue-job

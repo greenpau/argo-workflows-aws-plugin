@@ -1,13 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
-  name: sm-pipelines
+  name: aws-step-function
   namespace: argo
   annotations:
     workflows.argoproj.io/description: |
-      Execute Amazon SageMaker Pipelines run.
+      Execute AWS Step Functions state machine execution.
     workflows.argoproj.io/maintainer: '@greenpau'
-    workflows.argoproj.io/tags: sagemaker, pipelines
+    workflows.argoproj.io/tags: aws, aws step functions
     workflows.argoproj.io/version: '>= 2.9.0'
 spec:
   activeDeadlineSeconds: 600
@@ -19,28 +19,28 @@ spec:
         value: 100000000002
       - name: aws_region_name
         value: us-west-2
-      - name: pipeline_name
-        value: MyPipeline
+      - name: step_function_name
+        value: MyStepFunction
   templates:
     - name: main
       steps:
-        - - name: validate-pipeline
-            template: validate_pipeline
-        - - name: execute-pipeline
-            template: execute_pipeline
-    - name: validate_pipeline
+        - - name: validate-step-function
+            template: validate_step_function
+        - - name: execute-step-function
+            template: execute_step_function
+    - name: validate_step_function
       plugin:
         awf-aws-plugin:
           action: "validate"
-          service: "amazon_sagemaker_pipelines"
+          service: "aws_step_functions"
           account_id: "{{workflow.parameters.aws_account_id}}"
           region_name: "{{workflow.parameters.aws_region_name}}"
-          pipeline_name: "{{workflow.parameters.pipeline_name}}"
-    - name: execute_pipeline
+          step_function_name: "{{workflow.parameters.step_function_name}}"
+    - name: execute_step_function
       plugin:
         awf-aws-plugin:
           action: "execute"
-          service: "amazon_sagemaker_pipelines"
+          service: "aws_step_functions"
           account_id: "{{workflow.parameters.aws_account_id}}"
           region_name: "{{workflow.parameters.aws_region_name}}"
-          pipeline_name: "{{workflow.parameters.pipeline_name}}"
+          step_function_name: "{{workflow.parameters.step_function_name}}"

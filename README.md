@@ -9,6 +9,7 @@ Argo Workflows Executor Plugin for AWS Services, e.g. SageMaker Pipelines, Glue,
 
 * [Supported AWS Services](#supported-aws-services)
 * [Getting Started](#getting-started)
+  * [Add IAM Role and Policy](#add-iam-role-and-policy)
   * [Enable Executor Plugins](#enable-executor-plugins)
   * [Installation](#installation)
   * [Add Workflow Template](#add-workflow-template)
@@ -31,6 +32,47 @@ methods and database operations.
 
 
 ## Getting Started
+
+### Add IAM Role and Policy
+
+The plugin requires IAM role and policy to execute its operations.
+
+The following CDK code add a role, which is later referenced in `plugin.yaml` manifest.
+
+```ts
+    const audClaim = `${cluster.clusterOpenIdConnectIssuer}:aud`;
+    const subClaim = `${cluster.clusterOpenIdConnectIssuer}:sub`;
+
+    const k8sConditions = new cdk.CfnJson(this, "KubeOIDCCondition", {
+      value: {
+        [audClaim]: "sts.amazonaws.com",
+        // [subClaim]: "system:serviceaccount:kube-system:aws-node",
+        [subClaim]: "system:serviceaccount:argo:awf-aws-executor-plugin",
+      },
+    });
+
+    const awfPluginRole = new cdk.aws_iam.Role(this, "ArgoWorkflowsExecutorPluginRole", {
+      roleName: `${stack.stackName}-awf-aws-executor-plugin`,
+      assumedBy: new cdk.aws_iam.WebIdentityPrincipal(
+        `arn:aws:iam::${cdk.Aws.ACCOUNT_ID}:oidc-provider/${cluster.clusterOpenIdConnectIssuer}`
+      ).withConditions({
+        StringEquals: k8sConditions,
+      }),
+    });
+
+    awfPluginRole.addToPolicy(new cdk.aws_iam.PolicyStatement({
+      effect: cdk.aws_iam.Effect.ALLOW,
+      resources: ["arn:aws:sagemaker:*:*:pipeline/*"],
+      actions: [
+        "sagemaker:DescribePipeline",
+        "sagemaker:StartPipelineExecution",
+        "sagemaker:ListPipelineExecutionSteps",
+        "sagemaker:DescribePipelineExecution",
+        "sagemaker:ListPipelineExecutions",
+        "sagemaker:ListPipelines"
+      ]
+    }));
+```
 
 ### Enable Executor Plugins
 
@@ -101,7 +143,7 @@ kubectl describe cm -l workflows.argoproj.io/configmap-type=ExecutorPlugin -n ar
 Create a workflow template:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/greenpau/argo-workflows-aws-plugin/main/assets/sagemaker-pipelines-workflow-template.yaml
+kubectl apply -f https://raw.githubusercontent.com/greenpau/argo-workflows-aws-plugin/main/assets/amz-sagemaker-pipelines-workflow-template.yaml
 ```
 
 ### Trigger Workflow
@@ -109,7 +151,7 @@ kubectl apply -f https://raw.githubusercontent.com/greenpau/argo-workflows-aws-p
 Start new workflow:
 
 ```bash
-kubectl create -f https://raw.githubusercontent.com/greenpau/argo-workflows-aws-plugin/main/assets/sagemaker-pipelines-workflow.yaml
+kubectl create -f https://raw.githubusercontent.com/greenpau/argo-workflows-aws-plugin/main/assets/amz-sagemaker-pipelines-workflow.yaml
 ```
 
 The output follows:

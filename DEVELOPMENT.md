@@ -3,51 +3,9 @@
 <!-- begin-markdown-toc -->
 ## Table of Contents
 
-* [EKS Cluster Configuration](#eks-cluster-configuration)
 * [Plugin Operations](#plugin-operations)
 
 <!-- end-markdown-toc -->
-
-## EKS Cluster Configuration
-
-The plugin requires IAM role and policy to execute its operations.
-
-The following CDK code add a role, which is later referenced in `plugin.yaml` manifest.
-
-```ts
-    const audClaim = `${cluster.clusterOpenIdConnectIssuer}:aud`;
-    const subClaim = `${cluster.clusterOpenIdConnectIssuer}:sub`;
-
-    const k8sConditions = new cdk.CfnJson(this, "KubeOIDCCondition", {
-      value: {
-        [audClaim]: "sts.amazonaws.com",
-        // [subClaim]: "system:serviceaccount:kube-system:aws-node",
-        [subClaim]: "system:serviceaccount:argo:awf-aws-executor-plugin",
-      },
-    });
-
-    const awfPluginRole = new cdk.aws_iam.Role(this, "ArgoWorkflowsExecutorPluginRole", {
-      roleName: `${stack.stackName}-awf-aws-executor-plugin`,
-      assumedBy: new cdk.aws_iam.WebIdentityPrincipal(
-        `arn:aws:iam::${cdk.Aws.ACCOUNT_ID}:oidc-provider/${cluster.clusterOpenIdConnectIssuer}`
-      ).withConditions({
-        StringEquals: k8sConditions,
-      }),
-    });
-
-    awfPluginRole.addToPolicy(new cdk.aws_iam.PolicyStatement({
-      effect: cdk.aws_iam.Effect.ALLOW,
-      resources: ["arn:aws:sagemaker:*:*:pipeline/*"],
-      actions: [
-        "sagemaker:DescribePipeline",
-        "sagemaker:StartPipelineExecution",
-        "sagemaker:ListPipelineExecutionSteps",
-        "sagemaker:DescribePipelineExecution",
-        "sagemaker:ListPipelineExecutions",
-        "sagemaker:ListPipelines"
-      ]
-    }));
-```
 
 ## Plugin Operations
 
