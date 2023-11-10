@@ -21,6 +21,7 @@ var (
 		"amazon_sagemaker_pipelines": true,
 		"aws_glue":                   true,
 		"aws_step_functions":         true,
+		"aws_lambda":                 true,
 	}
 	allowedMockStates = map[string]bool{
 		"running": true,
@@ -34,17 +35,19 @@ var (
 
 // PluginRequest represent Plugin input arguments.
 type PluginRequest struct {
-	Kind             string `json:"kind,omitempty" xml:"kind,omitempty" yaml:"kind,omitempty"`
-	AccountID        string `json:"account_id,omitempty" xml:"account_id,omitempty" yaml:"account_id,omitempty"`
-	ServiceName      string `json:"service,omitempty" xml:"service,omitempty" yaml:"service,omitempty"`
-	Action           string `json:"action,omitempty" xml:"action,omitempty" yaml:"action,omitempty"`
-	PipelineName     string `json:"pipeline_name,omitempty" xml:"pipeline_name,omitempty" yaml:"pipeline_name,omitempty"`
-	JobName          string `json:"job_name,omitempty" xml:"job_name,omitempty" yaml:"job_name,omitempty"`
-	StepFunctionName string `json:"step_function_name,omitempty" xml:"step_function_name,omitempty" yaml:"step_function_name,omitempty"`
-	ResourceArn      string `json:"resource_arn,omitempty" xml:"resource_arn,omitempty" yaml:"resource_arn,omitempty"`
-	RegionName       string `json:"region_name,omitempty" xml:"region_name,omitempty" yaml:"region_name,omitempty"`
-	Mock             bool   `json:"mock,omitempty" xml:"mock,omitempty" yaml:"mock,omitempty"`
-	MockState        string `json:"mock_state,omitempty" xml:"mock_state,omitempty" yaml:"mock_state,omitempty"`
+	Kind               string                 `json:"kind,omitempty" xml:"kind,omitempty" yaml:"kind,omitempty"`
+	AccountID          string                 `json:"account_id,omitempty" xml:"account_id,omitempty" yaml:"account_id,omitempty"`
+	ServiceName        string                 `json:"service,omitempty" xml:"service,omitempty" yaml:"service,omitempty"`
+	Action             string                 `json:"action,omitempty" xml:"action,omitempty" yaml:"action,omitempty"`
+	PipelineName       string                 `json:"pipeline_name,omitempty" xml:"pipeline_name,omitempty" yaml:"pipeline_name,omitempty"`
+	JobName            string                 `json:"job_name,omitempty" xml:"job_name,omitempty" yaml:"job_name,omitempty"`
+	StepFunctionName   string                 `json:"step_function_name,omitempty" xml:"step_function_name,omitempty" yaml:"step_function_name,omitempty"`
+	LambdaFunctionName string                 `json:"lambda_function_name,omitempty" xml:"lambda_function_name,omitempty" yaml:"lambda_function_name,omitempty"`
+	Parameters         map[string]interface{} `json:"parameters,omitempty" xml:"parameters,omitempty" yaml:"parameters,omitempty"`
+	ResourceArn        string                 `json:"resource_arn,omitempty" xml:"resource_arn,omitempty" yaml:"resource_arn,omitempty"`
+	RegionName         string                 `json:"region_name,omitempty" xml:"region_name,omitempty" yaml:"region_name,omitempty"`
+	Mock               bool                   `json:"mock,omitempty" xml:"mock,omitempty" yaml:"mock,omitempty"`
+	MockState          string                 `json:"mock_state,omitempty" xml:"mock_state,omitempty" yaml:"mock_state,omitempty"`
 }
 
 // Validate validates Plugin input arguments.
@@ -86,6 +89,11 @@ func (req *PluginRequest) Validate() error {
 			return fmt.Errorf("step_function_name is empty")
 		}
 		req.ResourceArn = fmt.Sprintf("arn:aws:states:%s:%s:stateMachine:%s", req.RegionName, req.AccountID, req.StepFunctionName)
+	case "aws_lambda":
+		if req.StepFunctionName == "" {
+			return fmt.Errorf("lambda_function_name is empty")
+		}
+		req.ResourceArn = fmt.Sprintf("arn:aws:lambda:%s:%s:function:%s", req.RegionName, req.AccountID, req.LambdaFunctionName)
 	}
 
 	if req.Mock {
