@@ -90,7 +90,7 @@ func (req *PluginRequest) Validate() error {
 		}
 		req.ResourceArn = fmt.Sprintf("arn:aws:states:%s:%s:stateMachine:%s", req.RegionName, req.AccountID, req.StepFunctionName)
 	case "aws_lambda":
-		if req.StepFunctionName == "" {
+		if req.LambdaFunctionName == "" {
 			return fmt.Errorf("lambda_function_name is empty")
 		}
 		req.ResourceArn = fmt.Sprintf("arn:aws:lambda:%s:%s:function:%s", req.RegionName, req.AccountID, req.LambdaFunctionName)

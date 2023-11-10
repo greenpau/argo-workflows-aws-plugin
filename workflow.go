@@ -14,7 +14,12 @@
 
 package main
 
+import "sync"
+
 // PluginWorkflow describes a workflow.
 type PluginWorkflow struct {
-	ID string `json:"id,omitempty" xml:"id,omitempty" yaml:"id,omitempty"`
+	sync.Mutex
+	ID      string `json:"id,omitempty" xml:"id,omitempty" yaml:"id,omitempty"`
+	Status  string `json:"status,omitempty" xml:"status,omitempty" yaml:"status,omitempty"`
+	Message string `json:"message,omitempty" xml:"message,omitempty" yaml:"message,omitempty"`
 }

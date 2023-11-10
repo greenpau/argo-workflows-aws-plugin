@@ -522,95 +522,95 @@ func TestExecutorPlugin(t *testing.T) {
 				"requeue": "1m0s",
 			},
 		},
-		// {
-		// 	name: "test validate aws lambda function",
-		// 	req: &testHTTPRequest{
-		// 		method: "POST",
-		// 		headers: map[string]string{
-		// 			"Content-Type": "application/json",
-		// 		},
-		// 		path: "/api/v1/template.execute",
-		// 		data: map[string]interface{}{
-		// 			"workflow": map[string]interface{}{
-		// 				"metadata": map[string]interface{}{
-		// 					"name":      "aws-lambda-function-d42f4",
-		// 					"namespace": "argo",
-		// 					"uid":       "3d8bc315-e477-4215-8da4-18a4a649d30b",
-		// 				},
-		// 			},
-		// 			"template": map[string]interface{}{
-		// 				"name":     "validate_lambda_function",
-		// 				"inputs":   map[string]interface{}{},
-		// 				"outputs":  map[string]interface{}{},
-		// 				"metadata": map[string]interface{}{},
-		// 				"plugin": map[string]interface{}{
-		// 					"awf-aws-plugin": map[string]interface{}{
-		// 						"account_id":           "100000000002",
-		// 						"action":               "validate",
-		// 						"service":              "aws_lambda",
-		// 						"lambda_function_name": "MyLambdaFunction",
-		// 						"region_name":          "us-west-2",
-		// 						"mock":                 true,
-		// 						"mock_state":           "success",
-		// 					},
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// 	want: map[string]interface{}{
-		// 		"content_type": "text/plain; charset=utf-8",
-		// 		"status_code":  200,
-		// 		"node": map[string]interface{}{
-		// 			"message": "success",
-		// 			"phase":   "Succeeded",
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	name: "test execute aws lambda function",
-		// 	req: &testHTTPRequest{
-		// 		method: "POST",
-		// 		headers: map[string]string{
-		// 			"Content-Type": "application/json",
-		// 		},
-		// 		path: "/api/v1/template.execute",
-		// 		data: map[string]interface{}{
-		// 			"workflow": map[string]interface{}{
-		// 				"metadata": map[string]interface{}{
-		// 					"name":      "aws-lambda-function-d42f4",
-		// 					"namespace": "argo",
-		// 					"uid":       "dd5282c5-7703-49dc-b2a4-878ec2df2c1b",
-		// 				},
-		// 			},
-		// 			"template": map[string]interface{}{
-		// 				"name":     "execute_lambda_function",
-		// 				"inputs":   map[string]interface{}{},
-		// 				"outputs":  map[string]interface{}{},
-		// 				"metadata": map[string]interface{}{},
-		// 				"plugin": map[string]interface{}{
-		// 					"awf-aws-plugin": map[string]interface{}{
-		// 						"account_id":           "100000000002",
-		// 						"action":               "execute",
-		// 						"service":              "aws_lambda",
-		// 						"lambda_function_name": "MyLambdaFunction",
-		// 						"region_name":          "us-west-2",
-		// 						"mock":                 true,
-		// 						"mock_state":           "running",
-		// 					},
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// 	want: map[string]interface{}{
-		// 		"content_type": "text/plain; charset=utf-8",
-		// 		"status_code":  200,
-		// 		"node": map[string]interface{}{
-		// 			"message": "running",
-		// 			"phase":   "Running",
-		// 		},
-		// 		"requeue": "1m0s",
-		// 	},
-		// },
+		{
+			name: "test validate aws lambda function",
+			req: &testHTTPRequest{
+				method: "POST",
+				headers: map[string]string{
+					"Content-Type": "application/json",
+				},
+				path: "/api/v1/template.execute",
+				data: map[string]interface{}{
+					"workflow": map[string]interface{}{
+						"metadata": map[string]interface{}{
+							"name":      "aws-lambda-function-d42f4",
+							"namespace": "argo",
+							"uid":       "3d8bc315-e477-4215-8da4-18a4a649d30b",
+						},
+					},
+					"template": map[string]interface{}{
+						"name":     "validate_lambda_function",
+						"inputs":   map[string]interface{}{},
+						"outputs":  map[string]interface{}{},
+						"metadata": map[string]interface{}{},
+						"plugin": map[string]interface{}{
+							"awf-aws-plugin": map[string]interface{}{
+								"account_id":           "100000000002",
+								"action":               "validate",
+								"service":              "aws_lambda",
+								"lambda_function_name": "MyLambdaFunction",
+								"region_name":          "us-west-2",
+								"mock":                 true,
+								"mock_state":           "success",
+							},
+						},
+					},
+				},
+			},
+			want: map[string]interface{}{
+				"content_type": "text/plain; charset=utf-8",
+				"status_code":  200,
+				"node": map[string]interface{}{
+					"message": "success",
+					"phase":   "Succeeded",
+				},
+			},
+		},
+		{
+			name: "test execute aws lambda function",
+			req: &testHTTPRequest{
+				method: "POST",
+				headers: map[string]string{
+					"Content-Type": "application/json",
+				},
+				path: "/api/v1/template.execute",
+				data: map[string]interface{}{
+					"workflow": map[string]interface{}{
+						"metadata": map[string]interface{}{
+							"name":      "aws-lambda-function-d42f4",
+							"namespace": "argo",
+							"uid":       "dd5282c5-7703-49dc-b2a4-878ec2df2c1b",
+						},
+					},
+					"template": map[string]interface{}{
+						"name":     "execute_lambda_function",
+						"inputs":   map[string]interface{}{},
+						"outputs":  map[string]interface{}{},
+						"metadata": map[string]interface{}{},
+						"plugin": map[string]interface{}{
+							"awf-aws-plugin": map[string]interface{}{
+								"account_id":           "100000000002",
+								"action":               "execute",
+								"service":              "aws_lambda",
+								"lambda_function_name": "MyLambdaFunction",
+								"region_name":          "us-west-2",
+								"mock":                 true,
+								"mock_state":           "running",
+							},
+						},
+					},
+				},
+			},
+			want: map[string]interface{}{
+				"content_type": "text/plain; charset=utf-8",
+				"status_code":  200,
+				"node": map[string]interface{}{
+					"message": "running",
+					"phase":   "Running",
+				},
+				"requeue": "1m0s",
+			},
+		},
 		{
 			name: "test GET healthz",
 			req: &testHTTPRequest{

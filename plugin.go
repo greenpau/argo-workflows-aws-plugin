@@ -336,6 +336,21 @@ func handleTemplateExecute(ex *ExecutorPlugin) func(w http.ResponseWriter, req *
 				resp = ex.StartStepFunctionExecution(pluginInput, wfID)
 				return
 			}
+
+		case "aws_lambda":
+			switch pluginInput.Action {
+			case "validate":
+				resp = ex.CheckIfLambdaFunctionExists(pluginInput)
+				return
+			case "execute":
+				pluginWorkflow, exists := ex.Workflows[wfID]
+				if exists {
+					resp = ex.CheckLambdaFunctionExecution(pluginInput, pluginWorkflow)
+					return
+				}
+				resp = ex.StartLambdaFunctionExecution(pluginInput, wfID)
+				return
+			}
 		default:
 			ex.Logger.Error("encountered error during validation of plugin request", zap.String("error", "unsupported service name"))
 			resp.RequestError = ErrRequestInputMalformedError.WithArgs("unsupported service name")

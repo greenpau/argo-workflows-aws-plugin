@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: aws-lambda-function
+  namespace: argo
+  annotations:
+    workflows.argoproj.io/description: |
+      Execute AWS Glue job run.
+    workflows.argoproj.io/maintainer: '@greenpau'
+    workflows.argoproj.io/tags: aws, aws glue
+    workflows.argoproj.io/version: '>= 2.9.0'
+spec:
+  activeDeadlineSeconds: 600
+  entrypoint: main
+  serviceAccountName: awf-aws-executor-plugin
+  arguments:
+    parameters:
+      - name: aws_account_id
+        value: 100000000002
+      - name: aws_region_name
+        value: us-west-2
+      - name: lambda_function_name
+        value: MyLambdaFunction
+  templates:
+    - name: main
+      steps:
+        - - name: validate-lambda-function
+            template: validate_lambda_function
+        - - name: execute-lambda-function
+            template: execute_lambda_function
+    - name: validate_lambda_function
+      plugin:
+        awf-aws-plugin:
+          action: "validate"
+          service: "aws_lambda"
+          account_id: "{{workflow.parameters.aws_account_id}}"
+          region_name: "{{workflow.parameters.aws_region_name}}"
+          lambda_function_name: "{{workflow.parameters.lambda_function_name}}"
+    - name: execute_lambda_function
+      plugin:
+        awf-aws-plugin:
+          action: "execute"
+          service: "aws_lambda"
+          account_id: "{{workflow.parameters.aws_account_id}}"
+          region_name: "{{workflow.parameters.aws_region_name}}"
+          lambda_function_name: "{{workflow.parameters.lambda_function_name}}"
